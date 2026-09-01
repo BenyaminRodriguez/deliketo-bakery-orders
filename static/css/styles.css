@@ -6,16 +6,16 @@
   --bg-main: #fff5f6;
   --bg-card: #ffffff;
   --bg-dark: #2a1117;
-  
+
   /* Tonos principales */
   --primary: #e63946;
   --primary-hover: #d62828;
   --primary-light: #fff0f3;
-  
+
   /* Tonos naranjas y rojos cálidos para botones e iluminación */
   --accent-orange: #ff6b35;
   --accent-glow: #f97316;
-  
+
   /* Textos y bordes */
   --text-main: #2b171c;
   --text-muted: #825c66;
@@ -236,12 +236,10 @@ header.app-header {
   left: -60%;
   width: 50%;
   height: 200%;
-  background: linear-gradient(
-    60deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.45) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(60deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.45) 50%,
+      rgba(255, 255, 255, 0) 100%);
   transform: rotate(25deg);
   transition: all 0.6s ease;
 }
@@ -312,21 +310,21 @@ header.app-header {
   left: -60%;
   width: 50%;
   height: 200%;
-  background: linear-gradient(
-    60deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(60deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(255, 255, 255, 0) 100%);
   transform: rotate(25deg);
   transition: all 0.5s ease;
 }
 
-.date-pill.active::after, .date-pill:hover::after {
+.date-pill.active::after,
+.date-pill:hover::after {
   left: 120%;
 }
 
-.date-pill.active, .date-pill:hover {
+.date-pill.active,
+.date-pill:hover {
   background: linear-gradient(135deg, var(--accent-orange), var(--primary));
   color: #ffffff;
   border-color: transparent;
@@ -975,7 +973,39 @@ header.app-header {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
+@media (max-width: 768px) {
+
+  header,
+  .header-container,
+  .nav-buttons {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+
+  .nav-buttons,
+  .tabs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
