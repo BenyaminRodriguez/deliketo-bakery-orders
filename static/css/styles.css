@@ -984,28 +984,46 @@ header.app-header {
   }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
 
-  header,
-  .header-container,
-  .nav-buttons {
+  /* Forzar que toda la pantalla y contenedores no se pasen del ancho */
+  body,
+  html,
+  .container,
+  main,
+  header {
     width: 100% !important;
     max-width: 100% !important;
-    box-sizing: border-box;
+    overflow-x: hidden !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    box-sizing: border-box !important;
   }
 
-  .nav-buttons,
-  .tabs-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
+  /* Acomodar la barra superior y botones en columna */
+  header>div,
+  .header-container,
+  .nav-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    position: relative !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 auto !important;
   }
 
+  .nav-buttons button,
+  header button {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Hacer que la tabla se pueda deslizar de costado sin romper el diseño */
   table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
+    display: block !important;
+    width: 100% !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
   }
 }
