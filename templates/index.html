@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DELIKETO - Gestor de Pedidos & Catálogo</title>
+    <meta name="description"
+        content="Sistema de gestión de pedidos y catálogo de productos con cálculo automático para panadería keto.">
+
+    <!-- CSS del Sistema -->
+    <link rel="stylesheet" href="/static/css/styles.css?v=4">
+</head>
+
+<body>
+
+    <!-- Encabezado de la Aplicación -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon"> 🥐 </div>
+                <div>
+                    <h1 class="brand-title">DELIKETO</h1>
+                    <div class="brand-tagline">Gestión de Pedidos & Control de Entregas</div>
+                </div>
+            </div>
+
+            <!-- Navegación por Pestañas (Tabs) -->
+            <nav class="app-tabs">
+                <button type="button" class="tab-btn active" id="tabBtnOrders" onclick="switchTab('orders')">
+                    📦 Gestor de Pedidos
+                </button>
+                <button type="button" class="tab-btn" id="tabBtnCatalog" onclick="switchTab('catalog')">
+                    🧁 Catálogo de Productos
+                </button>
+            </nav>
+
+            <span class="badge-keto">Panadería Consciente</span>
+        </div>
+    </header>
+
+    <!-- Vista 1: Gestor de Pedidos -->
+    <div id="viewOrders" class="tab-content active">
+        <main class="main-wrapper">
+
+            <!-- Panel Izquierdo: Formulario de Carga de Pedidos -->
+            <aside class="panel">
+                <h2 class="panel-title">
+                    <span>📝</span> Nuevo Pedido
+                </h2>
+
+                <form id="newOrderForm">
+                    <div class="form-group">
+                        <label for="orderClientName">Cliente *</label>
+                        <input type="text" id="orderClientName" class="form-control" placeholder="Ej: María González"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderPhone">Teléfono / WhatsApp (Opcional)</label>
+                        <input type="tel" id="orderPhone" class="form-control" placeholder="Ej: +54 9 11 1234-5678">
+                    </div>
+
+                    <!-- Selector Interactivo de Productos del Catálogo -->
+                    <div class="form-group">
+                        <div class="items-picker-header">
+                            <label>Selección de Productos Keto *</label>
+                            <span class="auto-calc-badge">⚡ Cálculo Automático</span>
+                        </div>
+
+                        <!-- Lista Dinámica de Productos Seleccionados -->
+                        <div id="orderItemsPicker" class="items-picker-list">
+                            <!-- Se llena dinámicamente desde JS -->
+                        </div>
+
+                        <button type="button" class="btn-add-item" onclick="addOrderItemRow()">
+                            ➕ Agregar producto al pedido
+                        </button>
+
+                        <!-- Input oculto para mantener compatibilidad con el resumen de texto -->
+                        <input type="hidden" id="orderItems" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orderDeliveryDate">Fecha Entrega *</label>
+                            <input type="date" id="orderDeliveryDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderTotalPrice">Precio Total ($) *</label>
+                            <div class="price-input-wrapper">
+                                <span class="currency-symbol">$</span>
+                                <input type="number" id="orderTotalPrice" class="form-control price-input" step="100" min="0"
+                                    placeholder="0" required readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderAddress">Dirección de Entrega (Opcional)</label>
+                        <input type="text" id="orderAddress" class="form-control" placeholder="Ej: Av. Santa Fe 1234, CABA">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="orderNotes">Notas adicionales (Opcional)</label>
+                        <input type="text" id="orderNotes" class="form-control"
+                            placeholder="Ej: Sin endulzante artificial, timbre 4B">
+                    </div>
+
+                    <button type="submit" id="btnSubmitOrder" class="btn-submit">
+                        <span>➕</span> Cargar Pedido
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Panel Derecho: Lista de Pedidos con Filtro de Entregas -->
+            <section class="orders-section">
+
+                <!-- Barra de Filtros -->
+                <div class="filter-bar">
+                    <div class="filter-controls">
+                        <!-- Filtros Rápidos de Fecha de Entrega -->
+                        <div class="date-pill-group">
+                            <button type="button" class="date-pill active" onclick="filterByDate(this, '')">Todas las
+                                Entregas</button>
+                            <button type="button" class="date-pill" onclick="filterByDate(this, '{{ today_date }}')">📅
+                                Entregas de Hoy</button>
+                        </div>
+
+                        <!-- Filtro por Estado -->
+                        <select id="statusFilterSelect" class="select-filter">
+                            <option value="TODOS">Todos los Estados</option>
+                            <option value="Pendiente">Pendientes</option>
+                            <option value="En Preparación">En Preparación</option>
+                            <option value="Listo para Entrega">Listos para Entrega</option>
+                            <option value="Entregado">Entregados</option>
+                        </select>
+                    </div>
+
+                    <!-- Buscador -->
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Buscar por cliente o dirección...">
+                    </div>
+                </div>
+
+                <!-- Contador e Info -->
+                <div class="orders-header-info">
+                    <h2 class="panel-title" style="margin-bottom: 0;">
+                        <span>📦</span> Pedidos Registrados
+                    </h2>
+                    <span id="ordersCount" class="orders-count">Cargando...</span>
+                </div>
+
+                <!-- Grilla Dinámica de Pedidos -->
+                <div id="ordersContainer" class="orders-grid">
+                    <!-- Se llena dinámicamente desde app.js -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Vista 2: Catálogo de Productos -->
+    <div id="viewCatalog" class="tab-content" style="display: none;">
+        <main class="main-wrapper">
+
+            <!-- Panel Izquierdo: Formulario de Alta de Producto -->
+            <aside class="panel">
+                <h2 class="panel-title">
+                    <span>✨</span> Nuevo Producto
+                </h2>
+
+                <form id="newProductForm">
+                    <div class="form-group">
+                        <label for="productName">Nombre del Producto *</label>
+                        <input type="text" id="productName" class="form-control" placeholder="Ej: Muffin Keto de Arándanos"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Categoría *</label>
+                        <select id="productCategory" class="form-control" required>
+                            <option value="Panes">Panes</option>
+                            <option value="Dulces">Dulces</option>
+                            <option value="Postres">Postres</option>
+                            <option value="Facturas">Facturas</option>
+                            <option value="Salados">Salados</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productPrice">Precio Unitario ($) *</label>
+                        <input type="number" id="productPrice" class="form-control" step="10" min="0" placeholder="Ej: 4500"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <span>➕</span> Agregar al Catálogo
+                    </button>
+                </form>
+            </aside>
+
+            <!-- Panel Derecho: Tabla / Grilla del Catálogo -->
+            <section class="catalog-section">
+
+                <div class="filter-bar">
+                    <div class="search-box" style="flex: 1; max-width: 320px;">
+                        <input type="text" id="catalogSearchInput" placeholder="Buscar producto en catálogo...">
+                    </div>
+                    <select id="catalogCategoryFilter" class="select-filter">
+                        <option value="TODAS">Todas las Categorías</option>
+                        <option value="Panes">Panes</option>
+                        <option value="Dulces">Dulces</option>
+                        <option value="Postres">Postres</option>
+                        <option value="Facturas">Facturas</option>
+                        <option value="Salados">Salados</option>
+                    </select>
+                </div>
+
+                <div class="orders-header-info">
+                    <h2 class="panel-title" style="margin-bottom: 0;">
+                        <span>🧁</span> Productos en Catálogo
+                    </h2>
+                    <span id="catalogCount" class="orders-count">Cargando...</span>
+                </div>
+
+                <!-- Lista / Tabla de Productos -->
+                <div class="catalog-table-wrapper">
+                    <table class="catalog-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Precio Unitario</th>
+                                <th style="text-align: right;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="catalogTableBody">
+                            <!-- Se llena dinámicamente desde app.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal para Editar Precio de Producto -->
+    <div id="editPriceModal" class="modal-backdrop" style="display: none;">
+        <div class="modal-card">
+            <h3 class="modal-title">✏️ Editar Producto</h3>
+            <form id="editPriceForm">
+                <input type="hidden" id="editProductId">
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="editProductName">Nombre del Producto</label>
+                    <input type="text" id="editProductName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editProductCategory">Categoría</label>
+                    <select id="editProductCategory" class="form-control" required>
+                        <option value="Panes">Panes</option>
+                        <option value="Dulces">Dulces</option>
+                        <option value="Postres">Postres</option>
+                        <option value="Facturas">Facturas</option>
+                        <option value="Salados">Salados</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editProductPrice">Precio Unitario ($)</label>
+                    <input type="number" id="editProductPrice" class="form-control" step="10" min="0" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-submit" style="width: auto; padding: 10px 20px;">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notificación Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Pasar variables de servidor a JS -->
+    <script>
+        window.TODAY_DATE = "{{ today_date }}";
+    </script>
+    <script src="/static/js/app.js?v=4"></script>
+</body>
+
+</html>
