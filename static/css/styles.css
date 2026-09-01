@@ -132,22 +132,39 @@ header.app-header {
 }
 
 /* Layout Principal */
+.tab-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .main-wrapper {
   max-width: 1280px;
   margin: 32px auto;
   padding: 0 24px;
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 1024px) {
   .main-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* Paneles y Cards */
+.panel,
+.orders-section,
+.catalog-section {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .panel {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -352,6 +369,11 @@ header.app-header {
 .search-box {
   min-width: 220px;
   position: relative;
+}
+
+.catalog-search-box {
+  flex: 1;
+  max-width: 320px;
 }
 
 .search-box input {
@@ -813,11 +835,16 @@ header.app-header {
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .catalog-table {
   width: 100%;
+  min-width: 520px;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.9rem;
@@ -987,60 +1014,164 @@ header.app-header {
 @media screen and (max-width: 768px) {
 
   /* Evitar desbordes horizontales generales sin romper márgenes internos */
-  body,
-  html {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
-  /* Dejar que los contenedores respiren con un padding prolijo */
-  .container,
-  main,
-  header {
-    box-sizing: border-box !important;
-    max-width: 100% !important;
-    padding-left: 15px !important;
-    padding-right: 15px !important;
+  /* Header 100% adaptable y prolijo */
+  header.app-header {
+    padding: 16px 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  /* En la cabecera superior, acomodar los botones sin estirarlos de más */
-  header,
   .header-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
-  .nav-buttons,
-  .tabs-container {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 8px !important;
+  .brand {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .brand-title {
+    font-size: 1.4rem;
+  }
+
+  .brand-tagline {
+    font-size: 0.82rem;
+  }
+
+  /* Pestañas de navegación superiores en móvil: apiladas verticalmente, 100% fluidas y prolijas */
+  .app-tabs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    padding: 6px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 107, 53, 0.25);
+    box-sizing: border-box;
+  }
+
+  .tab-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    border-radius: 12px;
+    white-space: normal;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .badge-keto {
+    margin-top: 2px;
+  }
+
+  /* Layout principal y paneles en pantallas pequeñas */
+  .main-wrapper {
+    padding: 0 14px;
+    margin: 16px auto;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .panel {
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  /* Formulario de dos columnas se apila en vertical */
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Filtros y buscador en móvil */
+  .filter-bar {
+    padding: 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .date-pill-group {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .date-pill {
+    flex: 1;
+    text-align: center;
+    padding: 10px 12px;
+    white-space: normal;
+  }
+
+  .select-filter,
+  .search-box,
+  .search-box input {
     width: 100% !important;
-  }
-
-  .nav-buttons button,
-  .tabs-container button {
-    flex: 1 1 auto !important;
-    min-width: 120px !important;
-  }
-
-  /* Asegurar que los botones de acción principal mantengan su tamaño correcto */
-  button,
-  .btn {
-    box-sizing: border-box !important;
     max-width: 100% !important;
+    box-sizing: border-box;
   }
 
-  /* Tablas con desplazamiento suave horizontal */
+  /* Asegurar que los botones de acción principal mantengan su tamaño fluido */
+  button,
+  .btn,
+  .btn-submit {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  /* Tablas con desplazamiento táctil horizontal suave */
+  .catalog-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius);
+  }
+
   table {
-    display: block !important;
-    width: 100% !important;
-    overflow-x: auto !important;
-    white-space: nowrap !important;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .item-picker-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .item-select {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .qty-control {
+    flex: 1;
   }
 }
